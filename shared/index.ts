@@ -32,14 +32,11 @@ export interface BallState {
 
 // ─── Input ───
 export interface PlayerInput {
-  steer: number;         // -1 to 1
-  throttle: number;      // -1 to 1
+  steer: number;
+  throttle: number;
   jump: boolean;
-  boost: boolean;
-  dodge: boolean;
-  dodgeDirection: { x: number; y: number };
-  pass: boolean;
-  handbrake: boolean;
+  sprint: boolean;
+  kick: boolean;
   camera: { yaw: number; pitch: number };
   sequence: number;
 }

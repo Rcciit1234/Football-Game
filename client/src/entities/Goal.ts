@@ -90,7 +90,7 @@ export class Goal {
 
     // Team-colored glow inside goal
     const glowMat = new THREE.MeshBasicMaterial({
-      color: team === Team.Blue ? 0x3366ff : 0xff6633,
+      color: team === Team.Blue ? 0x00f0ff : 0x8b5cf6,
       transparent: true,
       opacity: 0.05,
       side: THREE.BackSide,

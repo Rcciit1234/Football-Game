@@ -4,7 +4,6 @@ interface MatchLike {
   state: MatchState;
   ball: { position: { x: number; y: number; z: number }; velocity: { x: number; y: number; z: number } };
   players: Map<string, PlayerState>;
-  playersPerTeam?: number;
 }
 
 export class AIController {
@@ -13,24 +12,19 @@ export class AIController {
     const myPos = player.bike.position;
     const isBlue = player.team === Team.Blue;
 
-    // Find the ball target
     const target = AIController.getAITarget(player, match);
     const distToTarget = AIController.distance(myPos, target);
 
-    // Goalkeeper behavior
     const playerIndex = AIController.getPlayerIndex(player, match);
     const isGoalkeeper = playerIndex === 0;
 
     let steer = 0;
     let throttle = 0;
-    let boost = false;
+    let sprint = false;
     let jump = false;
-    let pass = false;
-    let dodge = false;
-    const dodgeDirection = { x: 0, y: 0 };
+    let kick = false;
 
     if (isGoalkeeper) {
-      // Goalkeeper: stay near goal, track ball horizontally
       const goalX = isBlue ? -FIELD.LENGTH / 2 + 3 : FIELD.LENGTH / 2 - 3;
       const targetZ = Math.max(-FIELD.GOAL_WIDTH / 2 + 1, Math.min(FIELD.GOAL_WIDTH / 2 - 1, ball.position.z));
 
@@ -41,11 +35,9 @@ export class AIController {
       const distToBall = AIController.distance(myPos, ball.position);
       if (distToBall < 5 && Math.abs(ball.position.x - goalX) < 15) {
         throttle = Math.sign(ball.position.x - myPos.x) * 0.8;
-        boost = distToBall > 3;
+        sprint = distToBall > 3;
       }
     } else {
-      // Field player
-      // Steer towards target
       const angleToTarget = Math.atan2(target.z - myPos.z, target.x - myPos.x);
       let facingAngle = player.bike.rotation.y;
       if (isBlue) facingAngle = -facingAngle;
@@ -55,43 +47,32 @@ export class AIController {
       while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
 
       steer = Math.max(-1, Math.min(1, angleDiff * 2));
-
-      // Throttle
       throttle = 0.8;
-      boost = distToTarget > 8 && Math.abs(angleDiff) < 0.5;
+      sprint = distToTarget > 8 && Math.abs(angleDiff) < 0.5;
 
-      // Passing - when close to ball but not facing goal, or under pressure
       if (distToTarget < 2.5) {
         const goalPos = { x: isBlue ? FIELD.LENGTH / 2 - 2 : -FIELD.LENGTH / 2 + 2, y: 0, z: 0 };
         const angleToGoal = Math.atan2(goalPos.z - myPos.z, goalPos.x - myPos.x);
         const facingGoal = Math.abs(angleToGoal - facingAngle) < 0.5;
 
         if (facingGoal) {
-          // Shoot
           throttle = 1;
-          boost = true;
-          jump = true;
-          dodge = true;
-          dodgeDirection.x = Math.cos(angleToGoal);
-          dodgeDirection.y = 0;
+          sprint = true;
+          kick = true;
         } else if (Math.random() < 0.3) {
-          // Pass in a useful direction (towards goal or to teammate area)
-          pass = true;
+          kick = true;
         }
       }
 
-      // Defensive fallback
       const ownGoalX = isBlue ? -FIELD.LENGTH / 2 : FIELD.LENGTH / 2;
       const distToOwnGoal = AIController.distance(myPos, { x: ownGoalX, y: 0, z: 0 });
 
       if (distToOwnGoal < 20 && distToTarget > 10) {
-        // Head towards ball to defend
         throttle = 0.9;
-        boost = true;
+        sprint = true;
       }
     }
 
-    // Random jump for fun
     if (Math.random() < 0.005) {
       jump = true;
     }
@@ -100,11 +81,8 @@ export class AIController {
       steer,
       throttle,
       jump,
-      pass,
-      boost,
-      dodge,
-      dodgeDirection,
-      handbrake: false,
+      sprint,
+      kick,
       camera: { yaw: 0, pitch: 0 },
       sequence: Date.now(),
     };
@@ -116,9 +94,7 @@ export class AIController {
     const isBlue = player.team === Team.Blue;
     const playerIndex = AIController.getPlayerIndex(player, match);
 
-    // Different roles target different positions
     if (playerIndex <= 1) {
-      // Defenders: stay between ball and own goal
       const goalX = isBlue ? -FIELD.LENGTH / 2 + 5 : FIELD.LENGTH / 2 - 5;
       const targetX = (ball.position.x + goalX) / 2;
       const targetZ = ball.position.z * 0.5;
@@ -128,7 +104,6 @@ export class AIController {
         z: Math.max(-FIELD.WIDTH / 2 + 3, Math.min(FIELD.WIDTH / 2 - 3, targetZ)),
       };
     } else if (playerIndex <= 3) {
-      // Midfielders: chase ball with offset
       const offset = isBlue ? -3 : 3;
       return {
         x: Math.max(-FIELD.LENGTH / 2 + 2, Math.min(FIELD.LENGTH / 2 - 2, ball.position.x + offset)),
@@ -136,7 +111,6 @@ export class AIController {
         z: ball.position.z,
       };
     } else {
-      // Forwards: push towards opponent goal
       const goalX = isBlue ? FIELD.LENGTH / 2 - 5 : -FIELD.LENGTH / 2 + 5;
       return {
         x: Math.max(-FIELD.LENGTH / 2 + 2, Math.min(FIELD.LENGTH / 2 - 2, ball.position.x * 0.7 + goalX * 0.3)),

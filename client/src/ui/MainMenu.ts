@@ -52,7 +52,7 @@ export class MainMenu {
       font-size: 0.85rem; color: rgba(0,240,255,0.5); margin-bottom: 2.5rem;
       letter-spacing: 6px; text-transform: uppercase;
     `;
-    subtitle.textContent = '6v6 Bike Football';
+    subtitle.textContent = '6v6 Football';
 
     // Name input
     const inputContainer = document.createElement('div');
@@ -108,8 +108,10 @@ export class MainMenu {
       text-align: center; line-height: 2;
     `;
     controls.innerHTML = `
-       W/Up - Move &nbsp;|&nbsp; S/Down - Back &nbsp;|&nbsp; A/Left - Steer &nbsp;|&nbsp; D/Right - Steer<br>
-       Space - Jump &nbsp;|&nbsp; Shift - Boost &nbsp;|&nbsp; Q/Click - Pass &nbsp;|&nbsp; M - Mute
+       W/Up - Run Forward &nbsp;|&nbsp; S/Down - Run Back<br>
+       A/Left - Strafe Left &nbsp;|&nbsp; D/Right - Strafe Right<br>
+       Space - Jump &nbsp;|&nbsp; Shift - Sprint &nbsp;|&nbsp; Click/E - Kick<br>
+       Mouse - Look Around &nbsp;|&nbsp; M - Mute
        <br><br>
        <a href="https://github.com/Rcciit1234" target="_blank" style="color:rgba(0,240,255,0.3);text-decoration:none;transition:color 0.3s;"
           onmouseover="this.style.color='rgba(0,240,255,0.8)'" onmouseout="this.style.color='rgba(0,240,255,0.3)'">github.com/Rcciit1234</a>

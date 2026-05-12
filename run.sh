@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Starting 3D Football Game 6v6..."
+echo "Starting VoltGoal..."
 echo "  Server: http://localhost:3001"
 echo "  Client: http://localhost:5173"
 echo ""

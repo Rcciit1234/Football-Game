@@ -62,6 +62,6 @@ app.get('/health', (_req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`[Server] 3D Football Game 6v6 server running on port ${PORT}`);
+    console.log(`[Server] VoltGoal server running on port ${PORT}`);
   console.log(`[Server] Waiting for players...`);
 });

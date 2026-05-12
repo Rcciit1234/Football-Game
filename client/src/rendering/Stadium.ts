@@ -28,41 +28,26 @@ export class Stadium {
     const W = 68;
 
     // Grass base with stripe pattern
-    const grassGeo = new THREE.PlaneGeometry(L, W, 50, 34);
-    const pos = grassGeo.attributes.position;
-    for (let i = 0; i < pos.count; i++) {
-      const z = pos.getZ(i);
-      // Alternate stripe darkness
-      const stripe = Math.sin(z * 0.5) > 0 ? 1 : 0.97;
-      (pos as any).stripe = stripe;
-    }
     const grassMat = new THREE.MeshStandardMaterial({
-      color: 0x1a7a3c,
-      roughness: 0.95,
+      color: 0x2d8a4e,
+      roughness: 0.9,
       metalness: 0,
-      vertexColors: false,
     });
-    const grass = new THREE.Mesh(grassGeo, grassMat);
+    const grass = new THREE.Mesh(new THREE.PlaneGeometry(L, W), grassMat);
     grass.rotation.x = -Math.PI / 2;
     grass.position.y = 0.01;
     grass.receiveShadow = true;
     this.fieldGroup.add(grass);
 
-    // Stripe overlay (lighter/darker alternating)
+    // Stripe overlay
     const stripeMat = new THREE.MeshBasicMaterial({
-      color: 0x1a8a3c,
-      transparent: true,
-      opacity: 0.15,
-      side: THREE.DoubleSide,
+      color: 0x33a055, transparent: true, opacity: 0.12, side: THREE.DoubleSide,
     });
     for (let i = -5; i <= 5; i++) {
-      const s = new THREE.Mesh(
-        new THREE.PlaneGeometry(L / 10 + 0.5, W + 1),
-        stripeMat
-      );
+      const s = new THREE.Mesh(new THREE.PlaneGeometry(L / 10, W), stripeMat);
       s.rotation.x = -Math.PI / 2;
-      s.position.set(i * (L / 10 + 0.5), 0.015, 0);
-      if (Math.abs(i) % 2 === 0) s.material.opacity = 0;
+      s.position.set(i * (L / 10), 0.015, 0);
+      if (Math.abs(i) % 2 === 0) s.material = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 });
       this.fieldGroup.add(s);
     }
 
@@ -456,13 +441,11 @@ export class Stadium {
   }
 
   private createLighting() {
-    // Ambient fill
-    const ambient = new THREE.AmbientLight(0x222244, 0.35);
+    const ambient = new THREE.AmbientLight(0x8899bb, 0.6);
     this.scene.add(ambient);
 
-    // Main directional (moonlight)
-    const dirLight = new THREE.DirectionalLight(0x4466aa, 0.7);
-    dirLight.position.set(30, 55, 25);
+    const dirLight = new THREE.DirectionalLight(0xffeedd, 1.2);
+    dirLight.position.set(40, 50, 30);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 4096;
     dirLight.shadow.mapSize.height = 4096;
@@ -474,15 +457,12 @@ export class Stadium {
     dirLight.shadow.camera.bottom = -80;
     this.scene.add(dirLight);
 
-    // Fill rim light
-    const fill = new THREE.DirectionalLight(0x8844aa, 0.25);
+    const fill = new THREE.DirectionalLight(0x8888ff, 0.3);
     fill.position.set(-30, 20, -20);
     this.scene.add(fill);
 
-    // Bottom fill for shadows
-    const bottom = new THREE.DirectionalLight(0x224488, 0.15);
-    bottom.position.set(0, -10, 0);
-    this.scene.add(bottom);
+    const hemi = new THREE.HemisphereLight(0x87ceeb, 0x3a7d44, 0.4);
+    this.scene.add(hemi);
   }
 
   private createCrowd() {

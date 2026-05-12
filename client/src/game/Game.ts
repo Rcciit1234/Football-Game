@@ -4,7 +4,7 @@ import { InputManager } from '../input/InputManager.js';
 import { CameraController } from '../rendering/CameraController.js';
 import { NetworkManager } from './NetworkManager.js';
 import { GameState } from './GameState.js';
-import { Bike } from '../entities/Bike.js';
+import { Player } from '../entities/Player.js';
 import { Ball } from '../entities/Ball.js';
 import { Goal } from '../entities/Goal.js';
 import { Stadium } from '../rendering/Stadium.js';
@@ -14,8 +14,7 @@ import { Minimap } from '../ui/Minimap.js';
 import { Effects } from '../rendering/Effects.js';
 import { AudioManager } from '../audio/AudioManager.js';
 import {
-  MatchState, Team, PlayerState, PlayerInput,
-  ServerEvent
+  MatchState, Team, PlayerInput,
 } from '../../../shared/index.js';
 
 export class Game {
@@ -32,12 +31,11 @@ export class Game {
   private audio!: AudioManager;
   private stadium!: Stadium;
 
-  private bikes: Map<string, Bike> = new Map();
+  private players: Map<string, Player> = new Map();
   private ball!: Ball;
   private goals: Goal[] = [];
 
   private localPlayerId: string | null = null;
-  private lastInput: PlayerInput | null = null;
   private inputSequence = 0;
 
   private isRunning = false;
@@ -48,7 +46,6 @@ export class Game {
   private _wasKickoff = false;
 
   async init() {
-    // Initialize systems
     this.sceneManager = new SceneManager();
     this.physics = new PhysicsWorld();
     this.input = new InputManager();
@@ -62,39 +59,28 @@ export class Game {
     this.stadium = new Stadium(this.sceneManager.scene);
     this.cameraCtrl = new CameraController(this.sceneManager.camera);
 
-    // Create stadium
     this.stadium.build();
 
-    // Create goals
     const blueGoal = new Goal(this.sceneManager.scene, this.physics.world, Team.Blue);
     const orangeGoal = new Goal(this.sceneManager.scene, this.physics.world, Team.Orange);
     this.goals = [blueGoal, orangeGoal];
 
-    // Create ball
     this.ball = new Ball(this.sceneManager.scene, this.physics.world);
 
-    // Setup event listeners
     this.setupEvents();
 
-    // Show menu
     this.menu.show();
 
-    // Start render loop
     this.isRunning = true;
     this.lastTime = performance.now();
     this.animate();
 
-    // Setup window resize
     window.addEventListener('resize', () => this.sceneManager.onResize());
 
-    // Camera toggle
     window.addEventListener('keydown', (e) => {
-      if (e.key === 'c' || e.key === 'C') {
-        this.cameraCtrl.toggleMode();
-      }
       if (e.key === 'm' || e.key === 'M') {
         const muted = this.audio.toggleMute();
-        this.hud.showNotification(muted ? 'Audio: OFF' : 'Audio: ON');
+        this.hud.showNotification(muted ? 'Audio OFF' : 'Audio ON');
       }
     });
   }
@@ -125,6 +111,7 @@ export class Game {
         const wasKickoff = this._wasKickoff;
         if (wasKickoff) {
           this.audio.playMatchStart();
+          this.input.requestPointerLock();
         }
         this._wasKickoff = false;
       }
@@ -168,9 +155,9 @@ export class Game {
     };
 
     this.network.onPlayerLeft = (data) => {
-      const bike = this.bikes.get(data.id);
-      if (bike) bike.remove();
-      this.bikes.delete(data.id);
+      const player = this.players.get(data.id);
+      if (player) player.remove();
+      this.players.delete(data.id);
     };
   }
 
@@ -178,39 +165,29 @@ export class Game {
     const players = this.state.getPlayers();
     const ballState = this.state.getBall();
 
-    // Sync ball
     if (ballState) {
       this.ball.sync(ballState);
     }
 
-    // Sync bikes
     players.forEach((player) => {
-      let bike = this.bikes.get(player.id);
+      let p = this.players.get(player.id);
       const isLocal = player.id === this.localPlayerId;
 
-      if (!bike) {
+      if (!p) {
         const pName = player.name || (player.isAI ? 'AI' : 'Player');
         const pNum = String(Math.floor(Math.random() * 99) + 1);
         if (isLocal) {
-          bike = new Bike(this.sceneManager.scene, this.physics.world, player.team, 'player', 'You', '');
+          p = new Player(this.sceneManager.scene, this.physics.world, player.team, 'player', 'You', '');
         } else {
-          bike = new Bike(this.sceneManager.scene, this.physics.world, player.team, player.isAI ? 'ai' : 'remote', pName, pNum);
+          p = new Player(this.sceneManager.scene, this.physics.world, player.team, player.isAI ? 'ai' : 'remote', pName, pNum);
         }
-        this.bikes.set(player.id, bike);
+        this.players.set(player.id, p);
       }
 
-      bike.sync(player.bike);
+      p.sync(player.bike);
 
-      // Attach camera to local player
       if (isLocal) {
-        this.cameraCtrl.follow(bike.mesh);
-      }
-    });
-
-    // Remove disconnected players' bikes
-    this.bikes.forEach((bike, id) => {
-      if (!players.has(id) && id !== 'ball') {
-        // Keep AI bikes even if player state is gone (server manages)
+        this.cameraCtrl.follow(p.mesh);
       }
     });
   }
@@ -219,15 +196,6 @@ export class Game {
     const state = this.state;
     this.hud.updateScore(state.blueScore, state.orangeScore);
     this.hud.updateTimer(state.elapsedSeconds);
-
-    // Update boost for local player
-    if (this.localPlayerId) {
-      const player = state.players.get(this.localPlayerId);
-      if (player) {
-        this.hud.updateBoost(player.bike.boost);
-        this.hud.updateSpeed(player.bike.velocity);
-      }
-    }
   }
 
   private updateAudio() {
@@ -252,20 +220,14 @@ export class Game {
       steer: rawInput.steer,
       throttle: rawInput.throttle,
       jump: rawInput.jump,
-      boost: rawInput.boost,
-      pass: rawInput.pass,
-      dodge: rawInput.dodge,
-      dodgeDirection: rawInput.dodgeDirection,
-      handbrake: rawInput.handbrake,
+      sprint: rawInput.sprint,
+      kick: rawInput.kick,
       camera: rawInput.camera,
       sequence: this.inputSequence,
     };
 
-    // Send to server
     this.network.sendInput(input);
-    this.lastInput = input;
 
-    // Update minimap
     const players = this.state.getPlayers();
     const ballState = this.state.getBall();
     this.minimap.update(players, ballState);
@@ -280,19 +242,10 @@ export class Game {
     const dt = Math.min((now - this.lastTime) / 1000, 0.05);
     this.lastTime = now;
 
-    // Step physics locally for smoothness
     this.physics.step(dt);
-
-    // Handle input
     this.handleInput(dt);
-
-    // Update camera with mouse input for orbit
     this.cameraCtrl.update(dt, this.input.camera);
-
-    // Update effects
     this.effects.update(dt);
-
-    // Render
     this.sceneManager.render();
   }
 

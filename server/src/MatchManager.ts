@@ -28,7 +28,6 @@ interface Match {
   tickAccumulator: number;
   goalScoredTimer: number;
   ended: boolean;
-  passCooldowns: Map<string, number>;
 }
 
 let matchCounter = 0;
@@ -178,7 +177,6 @@ export class MatchManager {
       tickAccumulator: 0,
       goalScoredTimer: 0,
       ended: false,
-      passCooldowns: new Map(),
     };
 
     // Assign 12 players (up to 12 queue, rest AI)
@@ -475,12 +473,10 @@ export class MatchManager {
       const isBlue = player.team === Team.Blue;
       const dir = isBlue ? 1 : -1;
 
-      // Throttle/brake
-      const maxSpeed = bike.isBoosting ? BIKE.BOOST_SPEED : BIKE.MAX_SPEED;
-      const accel = bike.isBoosting ? BIKE.BOOST_ACCELERATION : BIKE.ACCELERATION;
+      const maxSpeed = input.sprint ? BIKE.BOOST_SPEED : BIKE.MAX_SPEED;
+      const accel = input.sprint ? BIKE.BOOST_ACCELERATION : BIKE.ACCELERATION;
 
       if (input.throttle !== 0) {
-        // Forward direction based on bike rotation
         const forwardX = Math.sin(bike.rotation.y) * dir;
         const forwardZ = Math.cos(bike.rotation.y) * dir;
 
@@ -488,13 +484,11 @@ export class MatchManager {
         bike.velocity.z += forwardZ * accel * input.throttle * dt;
       }
 
-      // Braking
       if (input.throttle < 0) {
         bike.velocity.x *= (1 - BIKE.BRAKE_FORCE * dt);
         bike.velocity.z *= (1 - BIKE.BRAKE_FORCE * dt);
       }
 
-      // Steering
       const speed = Math.sqrt(bike.velocity.x ** 2 + bike.velocity.z ** 2);
       if (Math.abs(input.steer) > 0.1 && speed > 0.5) {
         const turnRate = BIKE.STEER_SPEED * input.steer * (1 + speed / BIKE.MAX_SPEED * 0.5) * dt;
@@ -502,20 +496,17 @@ export class MatchManager {
         bike.angularVelocity.y = turnRate / dt;
       }
 
-      // Boost
-      bike.isBoosting = input.boost && bike.boost > 0;
+      bike.isBoosting = input.sprint && bike.boost > 0;
       if (bike.isBoosting) {
         bike.boost = Math.max(0, bike.boost - BIKE.BOOST_DRAIN_RATE * dt);
       } else {
         bike.boost = Math.min(BIKE.BOOST_MAX, bike.boost + BIKE.BOOST_REGEN_RATE * dt);
       }
 
-      // Ground friction
       const friction = 2.0;
       bike.velocity.x *= (1 - friction * dt);
       bike.velocity.z *= (1 - friction * dt);
 
-      // Speed cap
       const currentSpeed = Math.sqrt(bike.velocity.x ** 2 + bike.velocity.z ** 2);
       if (currentSpeed > maxSpeed) {
         const scale = maxSpeed / currentSpeed;
@@ -569,35 +560,26 @@ export class MatchManager {
         }
       }
 
-      // Pass
-      const passCooldown = match.passCooldowns.get(player.id) || 0;
-      match.passCooldowns.set(player.id, Math.max(0, passCooldown - dt));
-
-      if (input.pass && passCooldown <= 0) {
-        // Kick ball if close enough
+      // Kick
+      if (input.kick) {
         const dx = bike.position.x - match.ball.position.x;
         const dz = bike.position.z - match.ball.position.z;
         const dist = Math.sqrt(dx * dx + dz * dz);
 
-        if (dist < 2.5 && dist > 0) {
-          const passForce = 28;
-          const passHeight = 1.5;
-
-          // Direction: forward from player facing
+        if (dist < 3.0 && dist > 0) {
+          const kickForce = 35;
           const isBlue = player.team === Team.Blue;
           const dir = isBlue ? 1 : -1;
           const forwardX = Math.sin(bike.rotation.y) * dir;
           const forwardZ = Math.cos(bike.rotation.y) * dir;
 
-          match.ball.velocity.x = forwardX * passForce;
-          match.ball.velocity.z = forwardZ * passForce;
-          match.ball.velocity.y = passHeight;
+          match.ball.velocity.x = forwardX * kickForce;
+          match.ball.velocity.z = forwardZ * kickForce;
+          match.ball.velocity.y = 3;
 
           match.ball.lastTouchBy = player.id;
-          match.passCooldowns.set(player.id, 0.4);
 
-          // Push ball out of feet
-          const pushOut = 1.0;
+          const pushOut = 1.2;
           match.ball.position.x += forwardX * pushOut;
           match.ball.position.z += forwardZ * pushOut;
         }

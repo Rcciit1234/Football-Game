@@ -60,7 +60,7 @@ export class Minimap {
     players.forEach((player) => {
       const px = cx + player.bike.position.x * scale;
       const py = cy + player.bike.position.z * scale;
-      const color = player.team === Team.Blue ? '#3366ff' : '#ff6633';
+      const color = player.team === Team.Blue ? '#00f0ff' : '#8b5cf6';
       const alpha = player.isAI ? '66' : 'ff';
 
       ctx.fillStyle = color + alpha;
