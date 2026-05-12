@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import path from 'path';
 
 export default defineConfig({
-  base: process.env.GH_PAGES ? '/Bidyut/' : '/',
+  base: process.env.GH_PAGES ? '/Football-Game/' : '/',
   resolve: {
     alias: {
       '@shared': path.resolve(__dirname, '../shared'),
