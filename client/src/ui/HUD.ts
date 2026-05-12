@@ -30,9 +30,9 @@ export class HUD {
       backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);
     `;
     this.scoreEl.innerHTML = `
-      <div style="color:#3366ff;font-size:2rem;font-weight:800;">0</div>
-      <div style="color:#888;font-size:1rem;">VS</div>
-      <div style="color:#ff6633;font-size:2rem;font-weight:800;">0</div>
+      <div style="color:#00f0ff;font-size:2rem;font-weight:800;text-shadow:0 0 20px rgba(0,240,255,0.3);">0</div>
+      <div style="color:rgba(255,255,255,0.3);font-size:0.8rem;">VS</div>
+      <div style="color:#8b5cf6;font-size:2rem;font-weight:800;text-shadow:0 0 20px rgba(139,92,246,0.3);">0</div>
     `;
 
     // Timer
@@ -53,7 +53,7 @@ export class HUD {
     `;
 
     this.boostLabel = document.createElement('div');
-    this.boostLabel.style.cssText = `color: #888; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;`;
+    this.boostLabel.style.cssText = `color: rgba(0,240,255,0.5); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;`;
     this.boostLabel.textContent = 'Boost';
 
     const boostBarOuter = document.createElement('div');
@@ -65,7 +65,7 @@ export class HUD {
     this.boostFill = document.createElement('div');
     this.boostFill.style.cssText = `
       width: 100%; height: 100%;
-      background: linear-gradient(90deg, #ff6b35, #ffd700);
+      background: linear-gradient(90deg, #00f0ff, #8b5cf6);
       border-radius: 4px; transition: width 0.1s;
     `;
 
@@ -163,9 +163,9 @@ export class HUD {
     this.boostFill.style.width = `${pct}%`;
 
     if (pct < 20) {
-      this.boostFill.style.background = 'linear-gradient(90deg, #ff4444, #ff6b35)';
+      this.boostFill.style.background = 'linear-gradient(90deg, #ff006e, #00f0ff)';
     } else {
-      this.boostFill.style.background = 'linear-gradient(90deg, #ff6b35, #ffd700)';
+      this.boostFill.style.background = 'linear-gradient(90deg, #00f0ff, #8b5cf6)';
     }
   }
 
@@ -185,7 +185,7 @@ export class HUD {
       }, 800);
     } else {
       this.countdownEl.textContent = 'GO!';
-      this.countdownEl.style.color = '#ffd700';
+      this.countdownEl.style.color = '#00f0ff';
       this.countdownEl.style.opacity = '1';
       this.countdownEl.style.transform = 'translate(-50%, -50%) scale(1.5)';
       setTimeout(() => {
@@ -197,8 +197,8 @@ export class HUD {
   }
 
   showGoalNotification(team: string, scorer: string | null) {
-    const color = team === 'blue' ? '#3366ff' : '#ff6633';
-    const teamName = team === 'blue' ? 'BLUE' : 'ORANGE';
+    const color = team === 'blue' ? '#00f0ff' : '#8b5cf6';
+    const teamName = team === 'blue' ? 'CYAN' : 'PURPLE';
     this.goalNotificationEl.innerHTML = `
       <div style="color:${color}">GOAL!</div>
       <div style="font-size:1rem;color:#aaa;margin-top:10px">${teamName} TEAM</div>
@@ -215,7 +215,7 @@ export class HUD {
   showMatchEnd(data: { blueScore: number; orangeScore: number; winner: string | null }) {
     let msg = "MATCH OVER";
     if (data.winner) {
-      const winnerName = data.winner === 'blue' ? 'BLUE' : 'ORANGE';
+      const winnerName = data.winner === 'blue' ? 'CYAN' : 'PURPLE';
       msg = `${winnerName} TEAM WINS!`;
     } else {
       msg = "DRAW!";

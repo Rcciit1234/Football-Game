@@ -1,6 +1,6 @@
-# 3D Football Game 6v6
+# VoltGoal
 
-A multiplayer 3D football game where players on bikes compete in a 6v6 match.
+A multiplayer 3D bike football game — 6v6 mayhem on wheels.
 
 ## How to Play
 

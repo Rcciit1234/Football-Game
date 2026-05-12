@@ -3,42 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3D Football Game 6v6</title>
+  <title>VoltGoal - 6v6 Bike Football</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a0f; font-family: 'Segoe UI', system-ui, sans-serif; color: #fff; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #05050a; font-family: 'Segoe UI', system-ui, sans-serif; color: #fff; }
     #app { width: 100%; height: 100%; }
     canvas { display: block; }
     #loading-screen {
       position: fixed; inset: 0; z-index: 1000;
-      background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+      background: linear-gradient(135deg, #05050a 0%, #0d0d2b 100%);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
     #loading-screen h1 {
-      font-size: 4rem; font-weight: 800;
-      background: linear-gradient(90deg, #ff6b35, #f7931e, #ffd700);
+      font-size: 4.5rem; font-weight: 900;
+      background: linear-gradient(135deg, #00f0ff, #8b5cf6, #00f0ff);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      letter-spacing: -2px; margin-bottom: 1rem;
+      letter-spacing: -2px; margin-bottom: 0.5rem;
+      text-shadow: 0 0 60px rgba(0,240,255,0.3);
     }
-    #loading-screen .subtitle { font-size: 1.2rem; color: #888; margin-bottom: 2rem; }
+    #loading-screen .subtitle {
+      font-size: 1rem; color: #00f0ff; margin-bottom: 2rem;
+      letter-spacing: 4px; text-transform: uppercase; opacity: 0.7;
+    }
     .loader-bar {
-      width: 300px; height: 4px; background: #1a1a2e; border-radius: 2px; overflow: hidden;
+      width: 300px; height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden;
     }
     .loader-bar-inner {
       width: 0%; height: 100%;
-      background: linear-gradient(90deg, #ff6b35, #f7931e);
+      background: linear-gradient(90deg, #00f0ff, #8b5cf6);
       border-radius: 2px; animation: load 2s ease-in-out forwards;
     }
     @keyframes load { to { width: 100%; } }
-    #loading-screen .loading-text { margin-top: 1rem; color: #666; font-size: 0.9rem; }
+    #loading-screen .loading-text { margin-top: 1rem; color: rgba(255,255,255,0.3); font-size: 0.85rem; letter-spacing: 1px; }
   </style>
 </head>
 <body>
   <div id="loading-screen">
-    <h1>3D FOOTBALL</h1>
-    <div class="subtitle">6 vs 6</div>
+    <h1>VOLTGOAL</h1>
+    <div class="subtitle">6v6 Bike Football</div>
     <div class="loader-bar"><div class="loader-bar-inner"></div></div>
-    <div class="loading-text">Loading stadium...</div>
+    <div class="loading-text">LOADING STADIUM...</div>
   </div>
   <div id="app"></div>
   <script type="module" src="/src/main.ts"></script>
