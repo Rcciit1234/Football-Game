@@ -106,6 +106,8 @@ export class MainMenu {
        A / Left - Steer Left &nbsp;|&nbsp; D / Right - Steer Right<br>
        Space - Jump &nbsp;|&nbsp; Shift - Boost &nbsp;|&nbsp; Q / Click - Pass<br>
        M - Mute Audio
+       <br><br>
+       <a href="https://github.com/Rcciit1234" target="_blank" style="color:rgba(255,255,255,0.3);text-decoration:none;">github.com/Rcciit1234</a>
     `;
 
     // Status
