@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRO 6x6 FOOTBALL | Ultimate Arena</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="stadium-environment">
+        <div class="lights left"></div>
+        <div class="lights right"></div>
+        
+        <div class="game-container">
+            <div class="hud">
+                <div class="team player">
+                    <span class="name">PLAYER</span>
+                    <span id="player-score" class="score">0</span>
+                </div>
+                <div class="timer">
+                    <span id="match-timer">01:00</span>
+                </div>
+                <div class="team opponent">
+                    <span id="opponent-score" class="score">0</span>
+                    <span class="name">AI ELITE</span>
+                </div>
+            </div>
+
+            <canvas id="gameCanvas"></canvas>
+
+            <div id="start-screen" class="overlay">
+                <div class="content">
+                    <h1>PRO 6x6 FOOTBALL</h1>
+                    <p>Experience the ultimate arena. First to score more in 1 minute wins.</p>
+                    <button id="start-btn" class="cta-btn">KICK OFF</button>
+                    <div class="controls-hint">
+                        <span><i class="fa-solid fa-arrows-up-down-left-right"></i> WASD / ARROWS</span>
+                        <span><i class="fa-solid fa-bolt"></i> SPACE TO SHOOT</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="game-over-screen" class="overlay hidden">
+                <div class="content">
+                    <h2 id="result-text">MATCH ENDED</h2>
+                    <div class="final-score">
+                        <span id="final-player-score">0</span> - <span id="final-opponent-score">0</span>
+                    </div>
+                    <button id="restart-btn" class="cta-btn">REMATCH</button>
+                </div>
+            </div>
+
+            <div id="goal-alert" class="goal-alert hidden">
+                GOAL!
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
