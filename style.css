@@ -1,15 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
 
 :root {
-    --bg-dark: #050505;
+    --bg-dark: #05050f;
     --pitch-green: #1a4d1a;
-    --pitch-line: rgba(255, 255, 255, 0.4);
+    --pitch-line: rgba(255, 255, 255, 0.35);
     --player-blue: #0088ff;
     --opponent-red: #ff3333;
     --accent: #00ff88;
     --text-main: #ffffff;
-    --glass: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass: rgba(255, 255, 255, 0.04);
+    --glass-border: rgba(255, 255, 255, 0.08);
 }
 
 * {
@@ -24,6 +24,7 @@ body {
     color: var(--text-main);
     overflow: hidden;
     height: 100vh;
+    width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,28 +37,41 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: radial-gradient(circle at center, #111, #000);
+    background: radial-gradient(ellipse at center, #0d0d1a, #000000);
 }
 
-/* Stadium Lights */
 .lights {
     position: absolute;
     top: 0;
     width: 300px;
-    height: 100px;
-    background: radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.1), transparent 70%);
-    filter: blur(40px);
+    height: 120px;
+    background: radial-gradient(ellipse at bottom, rgba(255, 255, 200, 0.08), transparent 70%);
+    filter: blur(50px);
+    pointer-events: none;
 }
-.lights.left { left: 10%; transform: rotate(15deg); }
-.lights.right { right: 10%; transform: rotate(-15deg); }
+
+.lights.left {
+    left: 5%;
+    transform: rotate(20deg);
+}
+
+.lights.right {
+    right: 5%;
+    transform: rotate(-20deg);
+}
 
 .game-container {
     position: relative;
     width: 900px;
     height: 600px;
+    max-width: 100vw;
+    max-height: 100vh;
     background: var(--bg-dark);
-    border-radius: 20px;
-    box-shadow: 0 0 100px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 255, 136, 0.05);
+    border-radius: 16px;
+    box-shadow:
+        0 0 120px rgba(0, 0, 0, 0.9),
+        0 0 40px rgba(0, 255, 136, 0.04),
+        inset 0 0 60px rgba(0, 0, 0, 0.5);
     overflow: hidden;
     border: 1px solid var(--glass-border);
 }
@@ -66,21 +80,20 @@ canvas {
     display: block;
     width: 100%;
     height: 100%;
-    background: var(--pitch-green);
 }
 
-/* HUD Styling */
 .hud {
     position: absolute;
-    top: 20px;
+    top: 16px;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     align-items: center;
-    gap: 30px;
-    padding: 10px 40px;
-    background: var(--glass);
-    backdrop-filter: blur(15px);
+    gap: 24px;
+    padding: 8px 32px;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border: 1px solid var(--glass-border);
     border-radius: 50px;
     z-index: 10;
@@ -89,48 +102,60 @@ canvas {
 .team {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 12px;
 }
 
-.team.player .name { color: var(--player-blue); font-weight: 800; letter-spacing: 1px; }
-.team.opponent .name { color: var(--opponent-red); font-weight: 800; letter-spacing: 1px; }
+.team.player .name {
+    color: var(--player-blue);
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(0, 136, 255, 0.3);
+}
+
+.team.opponent .name {
+    color: var(--opponent-red);
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-shadow: 0 0 20px rgba(255, 51, 51, 0.3);
+}
 
 .score {
-    font-size: 2.5rem;
+    font-size: 2.2rem;
     font-weight: 800;
-    text-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .score.pop {
-    transform: scale(1.3);
+    transform: scale(1.35);
 }
 
 .timer {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 600;
-    min-width: 90px;
+    min-width: 80px;
     text-align: center;
     color: var(--accent);
-    background: rgba(0, 255, 136, 0.1);
-    padding: 5px 15px;
+    background: rgba(0, 255, 136, 0.08);
+    padding: 4px 14px;
     border-radius: 10px;
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
 }
 
-/* Overlay Styling */
 .overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 100;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.4s ease;
 }
 
 .overlay.hidden {
@@ -140,26 +165,36 @@ canvas {
 
 .content {
     text-align: center;
-    max-width: 500px;
+    max-width: 520px;
+    padding: 20px;
 }
 
 .content h1 {
-    font-size: 3.5rem;
+    font-size: 3.2rem;
     font-weight: 800;
-    margin-bottom: 10px;
-    background: linear-gradient(to bottom, #fff, #888);
+    margin-bottom: 8px;
+    background: linear-gradient(to bottom, #ffffff, #888888);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.content h2 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
 }
 
 .content p {
-    color: #aaa;
-    margin-bottom: 30px;
+    color: #999;
+    font-size: 1rem;
+    margin-bottom: 28px;
 }
 
 .cta-btn {
-    padding: 15px 40px;
-    font-size: 1.2rem;
+    padding: 14px 44px;
+    font-size: 1.15rem;
     font-weight: 800;
     color: var(--bg-dark);
     background: var(--accent);
@@ -168,40 +203,46 @@ canvas {
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s;
     text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .cta-btn:hover {
     transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+    box-shadow: 0 0 40px rgba(0, 255, 136, 0.35);
+}
+
+.cta-btn:active {
+    transform: scale(0.97);
 }
 
 .controls-hint {
-    margin-top: 40px;
+    margin-top: 36px;
     display: flex;
     justify-content: center;
-    gap: 30px;
-    color: #666;
-    font-size: 0.9rem;
+    gap: 28px;
+    color: #555;
+    font-size: 0.85rem;
 }
 
 .controls-hint i {
-    margin-right: 5px;
+    margin-right: 6px;
     color: var(--accent);
 }
 
-/* Goal Alert */
 .goal-alert {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 8rem;
+    font-size: 7rem;
     font-weight: 900;
-    color: #fff;
-    text-shadow: 0 0 50px var(--accent);
+    color: #ffffff;
+    text-shadow:
+        0 0 60px var(--accent),
+        0 0 120px rgba(0, 255, 136, 0.4);
     z-index: 50;
     pointer-events: none;
-    animation: goalPop 1s cubic-bezier(0.17, 0.89, 0.32, 1.49);
+    animation: goalPop 1.2s cubic-bezier(0.17, 0.89, 0.32, 1.49) forwards;
 }
 
 .goal-alert.hidden {
@@ -209,14 +250,63 @@ canvas {
 }
 
 @keyframes goalPop {
-    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-    100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+    0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 0;
+    }
+    30% {
+        transform: translate(-50%, -50%) scale(1.3);
+        opacity: 1;
+    }
+    60% {
+        transform: translate(-50%, -50%) scale(0.95);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
 }
 
 .final-score {
-    font-size: 4rem;
+    font-size: 3.5rem;
     font-weight: 800;
-    margin-bottom: 30px;
+    margin-bottom: 28px;
     color: var(--accent);
+    text-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
+}
+
+@media (max-width: 920px) {
+    .game-container {
+        border-radius: 0;
+        border: none;
+    }
+    .content h1 {
+        font-size: 2.2rem;
+    }
+    .content h2 {
+        font-size: 2rem;
+    }
+    .hud {
+        gap: 12px;
+        padding: 6px 18px;
+        top: 10px;
+    }
+    .score {
+        font-size: 1.6rem;
+    }
+    .timer {
+        font-size: 1rem;
+        min-width: 60px;
+    }
+    .goal-alert {
+        font-size: 4rem;
+    }
+}
+
+@media (max-height: 620px) {
+    .game-container {
+        border-radius: 0;
+        border: none;
+    }
 }
