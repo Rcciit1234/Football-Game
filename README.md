@@ -1,30 +1,36 @@
-# VoltGoal
+# PRO 6x6 FOOTBALL
 
-A multiplayer 3D bike football game — 6v6 mayhem on wheels.
+A professional 2D football (soccer) game — 6v6 with realistic stadium, animated players, crowd, and floodlights.
+
+## Play Now
+
+👉 **[f-game.surge.sh](https://f-game.surge.sh)**
 
 ## How to Play
 
-- **W / Up** - Move Forward
-- **S / Down** - Move Back
-- **A / Left** - Steer Left
-- **D / Right** - Steer Right
-- **Space** - Jump
-- **Shift** - Boost
-- **Q / Click** - Pass
-- **C** - Toggle Camera
-- **M** - Mute Audio
+- **WASD / Arrow Keys** — Move your player
+- **Space** — Shoot / kick the ball
+- Score more goals than the AI in 1 minute to win!
+
+## Features
+
+- 6v6 football with AI opponents
+- Realistic player animation (legs, arms, body lean while running)
+- Ball control & dribbling
+- Stadium with crowd, floodlights, and seating
+- Goal celebrations with particle effects
+- Sound effects (kick, cheer, whistle)
 
 ## Run Locally
 
 ```bash
-npm install
-npm run dev
+python3 -m http.server 8080
 ```
 
-Open http://localhost:5173 in your browser.
+Open http://localhost:8080 in your browser.
 
 ## Tech Stack
 
-- **Client**: Three.js, Vite, TypeScript
-- **Server**: Node.js, Socket.IO, TypeScript
-- **Physics**: cannon-es
+- **Canvas 2D** — Game rendering
+- **Web Audio API** — Sound effects
+- **Vanilla JS** — No frameworks needed
